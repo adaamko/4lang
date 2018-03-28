@@ -30,6 +30,8 @@ class DepTo4lang():
         self.lemmatizer = Lemmatizer(cfg)
         self.lexicon_fn = self.cfg.get("machine", "definitions_binary")
         self.lexicon = Lexicon.load_from_binary(self.lexicon_fn)
+        self.lexicon_fn_exp = self.cfg.get("machine", "definitions_binary_exp")
+        self.lexicon_exp = Lexicon.load_from_binary(self.lexicon_fn_exp)
         self.read_dep_map(dep_map_fn)
         self.word2lemma = {}
         self.first_only = cfg.getboolean('filter', 'first_only')

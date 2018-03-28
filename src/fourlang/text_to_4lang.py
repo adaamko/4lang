@@ -65,7 +65,7 @@ class TextTo4lang():
         logging.info('will process {0} file(s)'.format(len(file_names)))
         map(self.process_file, file_names)
 
-    def process_file(self, fn):
+    def process_file(self, fn, name="none"):
         base_fn = os.path.basename(fn)
         deps_fn = os.path.join(self.deps_dir, "{0}.deps".format(base_fn))
         # machines_fn = os.path.join(
@@ -78,8 +78,11 @@ class TextTo4lang():
         # TODO also support dumping machines to file
         # logging.getLogger().setLevel(__MACHINE_LOGLEVEL__)
 
+        machines = []
         if not self.cfg.getboolean('text', 'parse_only'):
-            self.process_deps(deps_fn)
+            machines = self.process_deps(deps_fn, name)
+
+        return machines
 
     def parse_file(self, fn, out_fn):
         logging.info("parsing file: {0}".format(fn))
@@ -101,7 +104,7 @@ class TextTo4lang():
                 "corefs": corefs})))
         logging.info("parsed {0} sentences".format(len(deps)))
 
-    def process_deps(self, fn):
+    def process_deps(self, fn, name="none"):
         sen_machines = []
         c = 0
         for line in open(fn):
@@ -111,11 +114,20 @@ class TextTo4lang():
                 # logging.info("processing sentences...")
                 machines = self.dep_to_4lang.get_machines_from_deps_and_corefs(
                     [sen_deps], corefs)
+
+                
+                
+                if self.expand:
+                    if self.abstract:
+                        self.dep_to_4lang.lexicon_exp.expand(machines, abstract=True)
+                    else:
+                        self.dep_to_4lang.lexicon.expand(machines, abstract=False)
+
                 if self.cfg.getboolean('text', 'expand'):
                     self.dep_to_4lang.lexicon.expand(machines)
 
                 if self.cfg.getboolean('text', 'print_graphs'):
-                    fn = print_text_graph(machines, self.graphs_dir, fn=c)
+                    fn = print_text_graph(machines, self.graphs_dir, fn=name)
 
                 sen_machines.append(machines)
                 c += 1
