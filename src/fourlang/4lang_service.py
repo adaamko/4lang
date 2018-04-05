@@ -30,7 +30,7 @@ class MyServer:
     def __init__(self):
         cfg = get_cfg(None)
         self.textto4lang = TextTo4lang(cfg)
-        self.textto4lang.graphs_dir = '/home/adaamko/projects/4lang/data'
+        self.textto4lang.graphs_dir = '/home/adaamko/AACS18/4lang/data'
         self.textto4lang.abstract = False
         self.textto4lang.expand = False
 
@@ -127,10 +127,32 @@ def abstract():
 
     return jsonify(return_sentences)
 
+
+@app.route('/wikidata', methods = ['POST'])
+def wikidata():
+    my_server.textto4lang.abstract = False
+    my_server.textto4lang.expand = True
+#    my_server.textto4lang.dep_to_4lang.lexicon.lexicon = {}
+    r = request.json
+    word = '/home/adaamko/AACS18/4lang/data/' + 'wikidata' + '.sens'
+    hyp = r['word']
+    return_sentences = {}
+    hyp_pro = my_server.textto4lang.preprocess_text(hyp)
+    with open(word, 'w+') as f:
+        f.write(hyp_pro.encode("utf8"))
+    my_server.textto4lang.input_sens = word
+    machines_hyp = my_server.textto4lang.process_file(word, 'wikidata')
+    graph_hyp = MachineGraph.create_from_machines(
+                machines_hyp[0].values())
+    return_sentences['word'] = graph_hyp.to_dict()
+    return jsonify(return_sentences)
+
+
+
 @app.route("/")
 def hello():
     return "Hello World!"
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(debug=True)

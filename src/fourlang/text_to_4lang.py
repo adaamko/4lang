@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import pdb
 
 from corenlp_wrapper import CoreNLPWrapper
 from dep_to_4lang import DepTo4lang
@@ -70,6 +71,7 @@ class TextTo4lang():
         deps_fn = os.path.join(self.deps_dir, "{0}.deps".format(base_fn))
         # machines_fn = os.path.join(
         #     self.machines_dir, "{0}.machines".format(base_fn))
+        os.remove(deps_fn)
         if not os.path.exists(deps_fn):
             self.parse_file(fn, deps_fn)
         else:
@@ -115,8 +117,9 @@ class TextTo4lang():
                 machines = self.dep_to_4lang.get_machines_from_deps_and_corefs(
                     [sen_deps], corefs)
 
-                
-                
+                print("process_deps")
+                print(machines)
+
                 if self.expand:
                     if self.abstract:
                         self.dep_to_4lang.lexicon_exp.expand(machines, abstract=True)

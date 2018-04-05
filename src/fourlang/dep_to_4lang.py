@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import traceback
+import pdb
 
 from pymachine.operators import AppendOperator, AppendToNewBinaryOperator
 
@@ -30,8 +31,6 @@ class DepTo4lang():
         self.lemmatizer = Lemmatizer(cfg)
         self.lexicon_fn = self.cfg.get("machine", "definitions_binary")
         self.lexicon = Lexicon.load_from_binary(self.lexicon_fn)
-        self.lexicon_fn_exp = self.cfg.get("machine", "definitions_binary_exp")
-        self.lexicon_exp = Lexicon.load_from_binary(self.lexicon_fn_exp)
         self.read_dep_map(dep_map_fn)
         self.word2lemma = {}
         self.first_only = cfg.getboolean('filter', 'first_only')
@@ -63,6 +62,7 @@ class DepTo4lang():
         dict_fn = self.cfg.get("dict", "output_file")
         logging.info('reading dependencies from {0}...'.format(dict_fn))
         longman = json.load(open(dict_fn))
+        pdb.set_trace()
         for c, (word, entry) in enumerate(longman.iteritems()):
             if c % 1000 == 0:
                 logging.info("added {0}...".format(c))
@@ -96,7 +96,7 @@ class DepTo4lang():
                     if self.first_only is True:
                         break
                 self.lexicon.add(word, unified_machine)
-            except Exception:
+            except Exception as e:
                 logging.error(u"exception caused by: '{0}'".format(word))
                 # logging.error(
                 #     u'skipping "{0}" because of an exception:'.format(
