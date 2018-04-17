@@ -145,6 +145,7 @@ def wikidata():
     graph_hyp = MachineGraph.create_from_machines(
                 machines_hyp[0].values())
     return_sentences['word'] = graph_hyp.to_dict()
+    return_sentences['lem'] = my_server.textto4lang.get_lem_machine(word)
     return jsonify(return_sentences)
 
 

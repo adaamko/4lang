@@ -106,6 +106,24 @@ class TextTo4lang():
                 "corefs": corefs})))
         logging.info("parsed {0} sentences".format(len(deps)))
 
+    def get_lem_machine(self,fn):
+        base_fn = os.path.basename(fn)
+        deps_fn = os.path.join(self.deps_dir, "{0}.deps".format(base_fn))
+
+        for line in open(deps_fn):
+            data = json.loads(line)
+            deps, corefs = data['deps'], data['corefs']
+            machines = []
+            return_name = ""
+            for sen_deps in deps:
+                # logging.info("processing sentences...")
+                machines = self.dep_to_4lang.get_machines_from_deps_and_corefs(
+                    [sen_deps], corefs)
+            for key in machines.keys():
+                if str(key) != str("ROOT"):
+                    return_name = machines[key].printname()
+            return return_name
+
     def process_deps(self, fn, name="none"):
         sen_machines = []
         c = 0
